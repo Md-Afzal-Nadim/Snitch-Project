@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
+import { googleCallback } from "../controllers/auth.controller.js";
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -9,11 +10,14 @@ const userSchema = new mongoose.Schema({
   },
   contact: {
     type: String,
-    required: true,
+    required: false, // bas google auth ke kiya hu false varna true hoga
   },
   password: {
     type: String,
-    required: true,
+    required: function () {
+      return !this.googleId;
+    }
+
   },
   fullname: {
     type: String,
@@ -23,6 +27,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ["buyer", "seller"],
     default: "buyer",
+  },
+
+  googleId: {
+    type: String,
   },
 });
 

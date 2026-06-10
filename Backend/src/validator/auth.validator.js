@@ -2,12 +2,18 @@ import {body, validationResult} from "express-validator";
 
 
 
-function validateRequest(req, res, next) {
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-  next();
-}
+
+export const validateRequest = (req, res, next) => {
+   const errors = validationResult(req);
+
+   if (!errors.isEmpty()) {
+      return res.status(400).json({
+         errors: errors.array(),
+      });
+   }
+
+   next();
+};
 
 
 export const validateRegisterUser = [
@@ -23,5 +29,14 @@ export const validateRegisterUser = [
    body("isSeller")
    .isBoolean().withMessage("isSeller must be a boolean value"),
 
+  validateRequest
+]
+
+
+export const  validateLoginUser = [
+  body("email")
+   .isEmail().withMessage("invalid email address"),
+  body("password")
+   .notEmpty().withMessage("Password is required"),
   validateRequest
 ]
