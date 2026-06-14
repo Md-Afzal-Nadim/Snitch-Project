@@ -26,8 +26,13 @@ const Login = () => {
     setMessage('')
 
     try {
-      await handleLogin(formData)
+      const user =await handleLogin(formData)
+      if (user.role == "buyer") {
       navigate('/')
+      } else if (user.role == "seller") {
+        navigate('/seller/dashboard')
+        
+      }
     } catch (error) {
       setMessage(error?.response?.data?.message || 'Login failed. Please try again.')
     }
