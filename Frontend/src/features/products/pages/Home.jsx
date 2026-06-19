@@ -28,31 +28,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
-      <header className="sticky top-0 z-20 border-b border-slate-200/80 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
-          <div className="flex items-center justify-between lg:justify-start">
-            <a href="/" className="text-xl font-semibold tracking-[0.3em] text-slate-900">
-              SNITCH
-            </a>
-          </div>
-
-          <label className="w-full lg:max-w-xl lg:flex-1 lg:px-6">
-            <span className="sr-only">Search products</span>
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
-              placeholder="Search products"
-              className="w-full rounded-full border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm outline-none transition focus:border-slate-400 focus:bg-white"
-            />
-          </label>
-
-          <div className="hidden items-center gap-3 text-sm text-slate-600 lg:flex">
-            <span className="rounded-full bg-slate-100 px-3 py-1.5">Fresh picks</span>
-            <span className="rounded-full bg-slate-100 px-3 py-1.5">New arrivals</span>
-          </div>
-        </div>
-      </header>
+      
 
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
         <section className="mb-8 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">

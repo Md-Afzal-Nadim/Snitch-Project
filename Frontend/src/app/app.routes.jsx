@@ -6,24 +6,38 @@ import Dashboard from "../features/products/pages/Dashboard.jsx"
 import Protected from "../features/auth/components/Protected.jsx"
 import Home from "../features/products/pages/Home.jsx"
 import ProductDetail from "../features/products/pages/ProductDetail.jsx"
+import SellerProductDetails from "../features/products/pages/SellerProductDetails.jsx"
+import Cart from "../features/cart/pages/Cart.jsx"
+import AppLayout from "./AppLayout.jsx"
 
 export const routes = createBrowserRouter([
+
+  {
+    path: "/register",
+    element: <Register />
+  },
+   {
+    path: "/login",
+    element: <Login />
+  },
+  {
+    element: <AppLayout />,
+    children: [
   {
     path: "/",
     element: <Home />
   },
-  {
-    path: "/login",
-    element: <Login />
-  },
+ 
   {
     path: "/products/:productId",
     element: <ProductDetail />
   },
   {
-    path: "/register",
-    element: <Register />
-  },
+    path: "/cart",
+    element: <Protected>
+      <Cart />
+    </Protected>
+  }, 
   {
     path: "/seller",
     children: [
@@ -39,7 +53,15 @@ export const routes = createBrowserRouter([
         element: <Protected role="seller"> 
                <Dashboard />
           </Protected>
+      },
+      {
+        path: "/seller/products/:productId",
+        element: <Protected role="seller">
+             <SellerProductDetails />
+          </Protected>
       }
+    ]
+  }
     ]
   }
 ])

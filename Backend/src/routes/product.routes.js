@@ -2,6 +2,7 @@ import express from "express";
 import { authenticateSeller } from "../middlewares/auth.middleware.js";
 import { createProduct, getSellerProducts, getAllProducts, getProductDetails } from "../controllers/product.controller.js";
 import { createProductValidator } from "../validator/product.validator.js";
+import { addProductVariant } from "../controllers/product.controller.js";
 
 import multer from "multer";
 
@@ -52,6 +53,15 @@ router.get("/",getAllProducts)
  * @access public
  */
 router.get("/detail/:id", getProductDetails)
+
+
+
+/**
+ * @route POST /api/products/:productId/variants
+ * @description Add variants to a product
+ * @access private (only seller can add variants to a product)
+ */
+router.post("/:productId/variants", authenticateSeller, upload.array("images", 7), addProductVariant);
 
 
 

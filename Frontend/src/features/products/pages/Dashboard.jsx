@@ -12,6 +12,8 @@ const Dashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
+  
+
   useEffect(() => {
     let isMounted = true;
 
@@ -165,6 +167,7 @@ const Dashboard = () => {
 
               return (
                 <article
+                onClick={() => {navigate(`/seller/products/${product._id}`) }}
                   key={product._id}
                   className="group overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl"
                 >
