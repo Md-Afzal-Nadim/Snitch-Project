@@ -87,7 +87,7 @@ const Cart = () => {
   const formatCurrency = (amount, currency = 'INR') =>
     `${currency} ${Number(amount).toLocaleString('en-IN')}`
 
-  console.log(cartItems)
+  
 
   /* ─── Empty state ─── */
   if (!cartItems?.length) {
@@ -204,7 +204,7 @@ const Cart = () => {
               {/* ── Cart Item List ── */}
               <div className="flex flex-col gap-6">
                 {cartItems.map(item => {
-                  const { product, variant: variantId, price, product: { _id } } = item
+                  const { product, variant: variantId, price, product: {_id } } = item
                   const variantDetail = getVariantDetails(product, variantId)
                   const imageUrl = getDisplayImage(product, variantDetail)
                   const displayPrice = price ?? variantDetail?.price ?? product?.price
@@ -333,7 +333,7 @@ const Cart = () => {
                             </span>
                             <button
                               id={`qty-inc-${_id}`}
-                              onClick={() => handleIncrementCartItem({ productId: _id, variantId })}
+                              onClick={() => handleIncrementCartItem({ productId:_id, variantId })}
                               className="w-9 h-9 flex items-center justify-center text-sm font-light transition-colors hover:opacity-60"
                               style={{ color: tokens.onSurface, borderLeft: `1px solid ${tokens.outlineVariant}` }}
                               aria-label="Increase quantity"
