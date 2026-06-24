@@ -20,11 +20,11 @@ const EcommerceNavbar = ({
   const navigate = useNavigate();
   const { handleGetAllProducts } = useProduct();
   const storeProducts = useSelector((state) => state.product.products || []);
-  const cartItems = useSelector((state) => state.cart?.items || []);
+  const cart = useSelector((state) => state.cart?.items || []);
 
   const cartCount = useMemo(() => {
-    return cartItems.reduce((total, item) => total + item.quantity, 0);
-  }, [cartItems]);
+    return cart.reduce((total, item) => total + item.quantity, 0);
+  }, [cart]);
 
   const searchProducts = products.length > 0 ? products : storeProducts;
 

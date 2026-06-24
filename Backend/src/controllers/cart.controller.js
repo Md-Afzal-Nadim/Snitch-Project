@@ -140,6 +140,11 @@ export const getCart = async (req, res) => {
     })
 }
 
+
+
+
+
+
 export const incrementCartItemQuantity = async (req, res) => {
     const { productId, variantId } = req.params
 

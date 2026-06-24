@@ -1,96 +1,64 @@
-import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
-import { useCart } from '../hooks/useCart'
-import { Link, useNavigate } from 'react-router'
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { useCart } from "../hooks/useCart";
+import { Link, useNavigate } from "react-router";
 
 /* ─── Inline styles & tokens matching the "Avenue Montaigne" design system ─── */
 const tokens = {
-  surface: '#fbf9f6',
-  surfaceLow: '#f5f3f0',
-  surfaceLowest: '#ffffff',
-  surfaceHigh: '#eae8e5',
-  surfaceHighest: '#e4e2df',
-  onSurface: '#1b1c1a',
-  onSurfaceVariant: '#4d463a',
-  secondary: '#7A6E63',
-  muted: '#B5ADA3',
-  primary: '#C9A96E',
-  primaryDark: '#745a27',
-  outlineVariant: '#d0c5b5',
-  outline: '#7f7668',
-}
+  surface: "#fbf9f6",
+  surfaceLow: "#f5f3f0",
+  surfaceLowest: "#ffffff",
+  surfaceHigh: "#eae8e5",
+  surfaceHighest: "#e4e2df",
+  onSurface: "#1b1c1a",
+  onSurfaceVariant: "#4d463a",
+  secondary: "#7A6E63",
+  muted: "#B5ADA3",
+  primary: "#C9A96E",
+  primaryDark: "#745a27",
+  outlineVariant: "#d0c5b5",
+  outline: "#7f7668",
+};
 
 const Cart = () => {
-  const cartItems = useSelector(state => state.cart.items)
-  const { handleGetCart, handleIncrementCartItem, handleDecrementCartItem } = useCart()
-  const navigate = useNavigate()
-
-
-  
+  const cart = useSelector((state) => state.cart);
+  const { handleGetCart, handleIncrementCartItem, handleDecrementCartItem } =
+    useCart();
+  const navigate = useNavigate();
 
   /* Local quantity state — key: cartItem._id, value: number */
-  const [quantities, setQuantities] = useState({})
+  const [quantities, setQuantities] = useState({});
 
   useEffect(() => {
-    handleGetCart()
-  }, [])
+    handleGetCart();
+  }, []);
 
-  /* Sync local qty state when cartItems arrive */
-  useEffect(() => {
-    if (cartItems?.length) {
-      const initial = {}
-      cartItems.forEach(item => {
-        initial[item._id] = item.quantity ?? 1
-      })
-      setQuantities(initial)
-    }
-  }, [cartItems])
+  console.log(cart);
 
   const changeQty = (id, delta) => {
-    setQuantities(prev => ({
+    setQuantities((prev) => ({
       ...prev,
       [id]: Math.max(1, (prev[id] ?? 1) + delta),
-    }))
-  }
-
-  /* ─── Derived totals ─── */
-  const subtotal = cartItems?.reduce((sum, item) => {
-    const qty = quantities[item._id] ?? item.quantity ?? 1
-    return sum + (item.price?.amount ?? 0) * qty
-  }, 0) ?? 0
-
-  const freeShippingThreshold = 15000
-  const shippingFree = subtotal >= freeShippingThreshold
-  const totalPieces = cartItems?.length ?? 0
+    }));
+  };
 
   /* ─── Helpers ─── */
   const getVariantDetails = (product, variantId) => {
-    if (!product?.variants || !variantId) return null
-
-    if (Array.isArray(product.variants)) {
-      return product.variants.find((variant) => variant._id === variantId) ?? null
-    }
-
-    if (product.variants?._id === variantId) {
-      return product.variants
-    }
-
-    return null
-  }
+    if (!product?.variants || !variantId) return null;
+    return product.variants;
+  };
 
   const getDisplayImage = (product, variant) => {
-    if (variant?.images?.length) return variant.images[0].url
-    if (product?.images?.length) return product.images[0].url
-    return null
-  }
+    if (variant?.images?.length) return variant.images[0].url;
+    if (product?.images?.length) return product.images[0].url;
+    return null;
+  };
 
-  const formatCurrency = (amount, currency = 'INR') =>
-    `${currency} ${Number(amount).toLocaleString('en-IN')}`
-
-  
+  const formatCurrency = (amount, currency = "INR") =>
+    `${currency} ${Number(amount).toLocaleString("en-IN")}`;
 
   /* ─── Empty state ─── */
-  if (!cartItems?.length) {
+  if (!cart?.items?.length) {
     return (
       <>
         <link
@@ -99,7 +67,10 @@ const Cart = () => {
         />
         <div
           className="min-h-screen flex flex-col"
-          style={{ backgroundColor: tokens.surface, fontFamily: "'Inter', sans-serif" }}
+          style={{
+            backgroundColor: tokens.surface,
+            fontFamily: "'Inter', sans-serif",
+          }}
         >
           {/* Nav */}
           <nav
@@ -109,7 +80,10 @@ const Cart = () => {
             <Link
               to="/"
               className="text-sm font-medium tracking-[0.35em] uppercase hover:opacity-80 transition-opacity"
-              style={{ fontFamily: "'Cormorant Garamond', serif", color: tokens.primary }}
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                color: tokens.primary,
+              }}
             >
               Snitch.
             </Link>
@@ -125,7 +99,10 @@ const Cart = () => {
           <div className="flex-1 flex flex-col items-center justify-center gap-6 pb-24 px-8">
             <p
               className="text-5xl md:text-6xl font-light leading-tight"
-              style={{ fontFamily: "'Cormorant Garamond', serif", color: tokens.onSurface }}
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                color: tokens.onSurface,
+              }}
             >
               Your selection is empty.
             </p>
@@ -142,13 +119,13 @@ const Cart = () => {
                 backgroundColor: tokens.onSurface,
                 color: tokens.surface,
               }}
-              onMouseEnter={e => {
-                e.currentTarget.style.backgroundColor = tokens.primary
-                e.currentTarget.style.color = tokens.onSurface
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = tokens.primary;
+                e.currentTarget.style.color = tokens.onSurface;
               }}
-              onMouseLeave={e => {
-                e.currentTarget.style.backgroundColor = tokens.onSurface
-                e.currentTarget.style.color = tokens.surface
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = tokens.onSurface;
+                e.currentTarget.style.color = tokens.surface;
               }}
             >
               Explore the Archive
@@ -156,7 +133,7 @@ const Cart = () => {
           </div>
         </div>
       </>
-    )
+    );
   }
 
   return (
@@ -169,14 +146,14 @@ const Cart = () => {
 
       <div
         className="min-h-screen pb-24 selection:bg-[#C9A96E]/30"
-        style={{ backgroundColor: tokens.surface, fontFamily: "'Inter', sans-serif" }}
+        style={{
+          backgroundColor: tokens.surface,
+          fontFamily: "'Inter', sans-serif",
+        }}
       >
-
-
         {/* ── Main Content ── */}
         <div className="max-w-7xl mx-auto px-8 lg:px-16 xl:px-24 pt-12 lg:pt-20">
           <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 items-start">
-
             {/* ═══════════════════════════════════════════════
                             LEFT COLUMN — Cart Items (65%)
                         ═══════════════════════════════════════════════ */}
@@ -188,7 +165,7 @@ const Cart = () => {
                   style={{
                     fontFamily: "'Cormorant Garamond', serif",
                     color: tokens.onSurface,
-                    fontSize: 'clamp(2.5rem, 5vw, 3.5rem)',
+                    fontSize: "clamp(2.5rem, 5vw, 3.5rem)",
                   }}
                 >
                   Your Selection
@@ -197,22 +174,28 @@ const Cart = () => {
                   className="text-[10px] uppercase tracking-[0.24em] font-medium"
                   style={{ color: tokens.muted }}
                 >
-                  {totalPieces} {totalPieces === 1 ? 'piece' : 'pieces'}
+                  {cart?.items?.length}{" "}
+                  {cart?.items?.length === 1 ? "piece" : "pieces"}
                 </p>
               </div>
 
               {/* ── Cart Item List ── */}
               <div className="flex flex-col gap-6">
-                {cartItems.map(item => {
-                  const { product, variant: variantId, price, product: {_id } } = item
-                  const variantDetail = getVariantDetails(product, variantId)
-                  const imageUrl = getDisplayImage(product, variantDetail)
-                  const displayPrice = price ?? variantDetail?.price ?? product?.price
-                  const qty = quantities[_id] ?? item.quantity ?? 1
-                  const attributes = variantDetail?.attributes ?? {}
-                  const stock = variantDetail?.stock
-                  const variantPrice = variantDetail?.price
-
+                {cart.items.map((item) => {
+                  const {
+                    product,
+                    variant: variantId,
+                    price,
+                    product: { _id },
+                  } = item;
+                  const variantDetail = getVariantDetails(product, variantId);
+                  const imageUrl = getDisplayImage(product, variantDetail);
+                  const displayPrice =
+                    price ?? variantDetail?.price ?? product?.price;
+                  const qty = quantities[_id] ?? item.quantity ?? 1;
+                  const attributes = variantDetail?.attributes ?? {};
+                  const stock = variantDetail?.stock;
+                  const variantPrice = variantDetail?.price;
 
                   return (
                     <div
@@ -222,10 +205,10 @@ const Cart = () => {
                     >
                       {/* Product Image */}
                       <div
-                        className="shrink-0 overflow-hidden"
+                        className="flex-shrink-0 overflow-hidden"
                         style={{
-                          width: 'clamp(100px, 15vw, 160px)',
-                          aspectRatio: '4/5',
+                          width: "clamp(100px, 15vw, 160px)",
+                          aspectRatio: "4/5",
                           backgroundColor: tokens.surfaceHighest,
                         }}
                       >
@@ -251,7 +234,7 @@ const Cart = () => {
                             className="font-light leading-tight mb-3"
                             style={{
                               fontFamily: "'Cormorant Garamond', serif",
-                              fontSize: 'clamp(1.2rem, 2.5vw, 1.6rem)',
+                              fontSize: "clamp(1.2rem, 2.5vw, 1.6rem)",
                               color: tokens.onSurface,
                             }}
                           >
@@ -267,7 +250,7 @@ const Cart = () => {
                                   className="px-3 py-1 text-[9px] uppercase tracking-[0.18em] font-medium"
                                   style={{
                                     backgroundColor: tokens.primary,
-                                    color: '#fff',
+                                    color: "#fff",
                                   }}
                                 >
                                   {val}
@@ -282,8 +265,11 @@ const Cart = () => {
                             style={{ color: tokens.onSurface }}
                           >
                             {displayPrice
-                              ? formatCurrency(displayPrice.amount, displayPrice.currency)
-                              : '—'}
+                              ? formatCurrency(
+                                  displayPrice.amount,
+                                  displayPrice.currency,
+                                )
+                              : "—"}
                           </p>
 
                           {/* Stock */}
@@ -292,21 +278,37 @@ const Cart = () => {
                               className="text-[10px] uppercase tracking-[0.15em] mb-4"
                               style={{ color: tokens.muted }}
                             >
-                              {stock > 0 ? `${stock} in stock` : 'Out of stock'}
+                              {stock > 0 ? `${stock} in stock` : "Out of stock"}
                             </p>
                           )}
-                          {
-                            displayPrice?.amount != null &&
-                            variantPrice?.amount != null &&
-                            displayPrice.amount !== variantPrice.amount && (
-                              <>
-                                {displayPrice.amount > variantPrice.amount
-                                  ? <p className="text-[10px] uppercase tracking-[0.15em] mb-4 text-green-800 font-bold" > you will get this at {formatCurrency(variantPrice.amount, variantPrice.currency)} save {Math.abs(variantPrice.amount - displayPrice.amount)}.  </p>
-                                  : <p className="text-[10px] uppercase tracking-[0.15em] mb-4 text-red-600 font-bold" > Warning this product will cost you {Math.abs(variantPrice.amount - displayPrice.amount)} more.  </p>
-                                }
-                              </>
-                            )
-                          }
+                          {displayPrice.amount !== variantPrice.amount && (
+                            <>
+                              {displayPrice.amount > variantPrice.amount ? (
+                                <p className="text-[10px] uppercase tracking-[0.15em] mb-4 text-green-800 font-bold">
+                                  {" "}
+                                  you will get this at{" "}
+                                  {formatCurrency(
+                                    variantPrice.amount,
+                                    variantPrice.currency,
+                                  )}{" "}
+                                  save{" "}
+                                  {Math.abs(
+                                    variantPrice.amount - displayPrice.amount,
+                                  )}
+                                  .{" "}
+                                </p>
+                              ) : (
+                                <p className="text-[10px] uppercase tracking-[0.15em] mb-4 text-red-600 font-bold">
+                                  {" "}
+                                  Warning this product will cost you{" "}
+                                  {Math.abs(
+                                    variantPrice.amount - displayPrice.amount,
+                                  )}{" "}
+                                  more.{" "}
+                                </p>
+                              )}
+                            </>
+                          )}
                         </div>
 
                         {/* Bottom Row: Quantity + Remove */}
@@ -314,13 +316,23 @@ const Cart = () => {
                           {/* Quantity Stepper */}
                           <div
                             className="flex items-center"
-                            style={{ border: `1px solid ${tokens.outlineVariant}` }}
+                            style={{
+                              border: `1px solid ${tokens.outlineVariant}`,
+                            }}
                           >
                             <button
                               id={`qty-dec-${_id}`}
-                              onClick={() => handleDecrementCartItem({ productId: _id, variantId })}
+                              onClick={() => 
+                                handleDecrementCartItem({
+                                  productId: _id,
+                                  variantId,
+                                })
+                            }
                               className="w-9 h-9 flex items-center justify-center text-sm font-light transition-colors hover:opacity-60"
-                              style={{ color: tokens.onSurface, borderRight: `1px solid ${tokens.outlineVariant}` }}
+                              style={{
+                                color: tokens.onSurface,
+                                borderRight: `1px solid ${tokens.outlineVariant}`,
+                              }}
                               aria-label="Decrease quantity"
                             >
                               −
@@ -333,9 +345,17 @@ const Cart = () => {
                             </span>
                             <button
                               id={`qty-inc-${_id}`}
-                              onClick={() => handleIncrementCartItem({ productId:_id, variantId })}
+                              onClick={() =>
+                                handleIncrementCartItem({
+                                  productId: _id,
+                                  variantId,
+                                })
+                              }
                               className="w-9 h-9 flex items-center justify-center text-sm font-light transition-colors hover:opacity-60"
-                              style={{ color: tokens.onSurface, borderLeft: `1px solid ${tokens.outlineVariant}` }}
+                              style={{
+                                color: tokens.onSurface,
+                                borderLeft: `1px solid ${tokens.outlineVariant}`,
+                              }}
                               aria-label="Increase quantity"
                             >
                               +
@@ -353,25 +373,43 @@ const Cart = () => {
                         </div>
                       </div>
                     </div>
-                  )
+                  );
                 })}
               </div>
 
               {/* Policy strip */}
               <div
                 className="mt-10 pt-8 grid grid-cols-3 gap-4 text-[10px] uppercase tracking-[0.12em]"
-                style={{ borderTop: `1px solid ${tokens.surfaceHighest}`, color: tokens.muted }}
+                style={{
+                  borderTop: `1px solid ${tokens.surfaceHighest}`,
+                  color: tokens.muted,
+                }}
               >
                 <div>
-                  <p className="font-medium mb-1" style={{ color: tokens.secondary }}>Shipping</p>
+                  <p
+                    className="font-medium mb-1"
+                    style={{ color: tokens.secondary }}
+                  >
+                    Shipping
+                  </p>
                   <p>Complimentary over INR 15,000</p>
                 </div>
                 <div>
-                  <p className="font-medium mb-1" style={{ color: tokens.secondary }}>Returns</p>
+                  <p
+                    className="font-medium mb-1"
+                    style={{ color: tokens.secondary }}
+                  >
+                    Returns
+                  </p>
                   <p>Within 14 days of delivery</p>
                 </div>
                 <div>
-                  <p className="font-medium mb-1" style={{ color: tokens.secondary }}>Authenticity</p>
+                  <p
+                    className="font-medium mb-1"
+                    style={{ color: tokens.secondary }}
+                  >
+                    Authenticity
+                  </p>
                   <p>100% Guaranteed</p>
                 </div>
               </div>
@@ -383,14 +421,17 @@ const Cart = () => {
             <div className="w-full lg:w-[35%] lg:sticky lg:top-28">
               <div
                 className="p-8"
-                style={{ backgroundColor: tokens.surfaceLowest, boxShadow: '0 20px 40px rgba(27,28,26,0.04)' }}
+                style={{
+                  backgroundColor: tokens.surfaceLowest,
+                  boxShadow: "0 20px 40px rgba(27,28,26,0.04)",
+                }}
               >
                 {/* Heading */}
                 <h2
                   className="font-light mb-6"
                   style={{
                     fontFamily: "'Cormorant Garamond', serif",
-                    fontSize: '1.75rem',
+                    fontSize: "1.75rem",
                     color: tokens.onSurface,
                   }}
                 >
@@ -398,7 +439,10 @@ const Cart = () => {
                 </h2>
 
                 {/* Tonal divider */}
-                <div className="mb-6" style={{ height: 1, backgroundColor: tokens.surfaceHighest }} />
+                <div
+                  className="mb-6"
+                  style={{ height: 1, backgroundColor: tokens.surfaceHighest }}
+                />
 
                 {/* Line items */}
                 <div className="flex flex-col gap-4 mb-6">
@@ -413,7 +457,7 @@ const Cart = () => {
                       className="text-[11px] uppercase tracking-[0.12em] font-medium"
                       style={{ color: tokens.onSurface }}
                     >
-                      {formatCurrency(subtotal)}
+                      {formatCurrency(cart.totalPrice)}
                     </span>
                   </div>
 
@@ -425,10 +469,15 @@ const Cart = () => {
                       Shipping
                     </span>
                     <span
-                      className="text-[10px] uppercase tracking-widest"
-                      style={{ color: shippingFree ? '#5a7a5a' : tokens.muted }}
+                      className="text-[10px] uppercase tracking-[0.1em]"
+                      style={{
+                        color:
+                          cart.totalPrice >= 15000 ? "#5a7a5a" : tokens.muted,
+                      }}
                     >
-                      {shippingFree ? 'Complimentary' : `Complimentary over INR 15,000`}
+                      {cart.totalPrice >= 15000
+                        ? "Complimentary"
+                        : `Complimentary over INR 15,000`}
                     </span>
                   </div>
 
@@ -440,7 +489,7 @@ const Cart = () => {
                       Duties & Taxes
                     </span>
                     <span
-                      className="text-[10px] uppercase tracking-widest"
+                      className="text-[10px] uppercase tracking-[0.1em]"
                       style={{ color: tokens.muted }}
                     >
                       Included
@@ -449,7 +498,10 @@ const Cart = () => {
                 </div>
 
                 {/* Total divider */}
-                <div className="mb-6" style={{ height: 1, backgroundColor: tokens.surfaceHighest }} />
+                <div
+                  className="mb-6"
+                  style={{ height: 1, backgroundColor: tokens.surfaceHighest }}
+                />
 
                 {/* Grand Total */}
                 <div className="flex justify-between items-baseline mb-8">
@@ -463,7 +515,7 @@ const Cart = () => {
                     className="text-base uppercase tracking-[0.18em] font-medium"
                     style={{ color: tokens.onSurface }}
                   >
-                    {formatCurrency(subtotal)}
+                    {formatCurrency(cart.totalPrice)}
                   </span>
                 </div>
 
@@ -475,13 +527,13 @@ const Cart = () => {
                     backgroundColor: tokens.onSurface,
                     color: tokens.surface,
                   }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.backgroundColor = tokens.primary
-                    e.currentTarget.style.color = tokens.onSurface
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = tokens.primary;
+                    e.currentTarget.style.color = tokens.onSurface;
                   }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.backgroundColor = tokens.onSurface
-                    e.currentTarget.style.color = tokens.surface
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = tokens.onSurface;
+                    e.currentTarget.style.color = tokens.surface;
                   }}
                 >
                   Proceed to Checkout
@@ -492,17 +544,17 @@ const Cart = () => {
                   id="continue-shopping"
                   className="w-full py-4 text-[11px] uppercase tracking-[0.25em] font-medium transition-all duration-300"
                   style={{
-                    backgroundColor: 'transparent',
+                    backgroundColor: "transparent",
                     border: `1px solid ${tokens.outlineVariant}`,
                     color: tokens.onSurface,
                   }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.borderColor = tokens.primary
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = tokens.primary;
                   }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.borderColor = tokens.outlineVariant
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = tokens.outlineVariant;
                   }}
-                  onClick={() => navigate('/')}
+                  onClick={() => navigate("/")}
                 >
                   Continue Shopping
                 </button>
@@ -516,12 +568,11 @@ const Cart = () => {
                 </p>
               </div>
             </div>
-
           </div>
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default Cart
+export default Cart;
