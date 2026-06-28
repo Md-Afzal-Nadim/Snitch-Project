@@ -1,7 +1,7 @@
 import express from "express"
 import { authenticateUser } from "../middlewares/auth.middleware.js";
 import { validateAddToCart, validateIncrementCartItemQuantity, validateDecrementCartItemQuantity } from "../validator/cart.validator.js";
-import { addToCart, getCart, incrementCartItemQuantity, decrementCartItemQuantity } from "../controllers/cart.controller.js";
+import { addToCart, getCart, incrementCartItemQuantity, decrementCartItemQuantity, createOrderController, verifyOrderController } from "../controllers/cart.controller.js";
 
 
 
@@ -53,6 +53,20 @@ router.patch("/quantity/increment/:productId/:variantId", authenticateUser, vali
  * @argument quantity - New quantity of the item ( required)
  */
 router.patch("/quantity/decrement/:productId/:variantId", authenticateUser, validateDecrementCartItemQuantity, decrementCartItemQuantity);
+
+
+
+/**
+ * @route POST /api/cart/payment/create/order
+ * @description Create an order
+ * @access private
+ */
+router.post("/payment/create/order", authenticateUser, createOrderController);
+
+
+
+
+router.post("/payment/verify/order", authenticateUser, verifyOrderController);
 
 
 
