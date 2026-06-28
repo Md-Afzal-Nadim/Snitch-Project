@@ -11,6 +11,7 @@ import cors from "cors";
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { config } from "./config/config.js";
+import path from "path";
 
 
 
@@ -50,6 +51,14 @@ app.use("/api/auth", authRouter);
 app.use("/api/products", productRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/address", addressRouter);
+
+
+
+app.use(express.static("./public"));
+
+app.use("*name", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "./public/index.html"));
+})
 
     
 
