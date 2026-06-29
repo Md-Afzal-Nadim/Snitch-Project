@@ -18,7 +18,7 @@ router.get("/google",
    passport.authenticate("google", { scope: ["profile", "email"] }));
 
 router.get("/google/callback",
-   passport.authenticate("google", { session: false, failureRedirect: "https://snitch-project-zuqv.onrender.com/login" }),
+   passport.authenticate("google", { session: false, failureRedirect: "http://localhost:5173/login" }),
    googleCallback
   
   )

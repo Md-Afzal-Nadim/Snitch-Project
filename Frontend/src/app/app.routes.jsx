@@ -47,13 +47,17 @@ export const routes = createBrowserRouter([
     </Protected>
 
   },
+
+]
+  },
   {
     path: "/address",
     element: <Protected>
       <Address />
     </Protected>
 
-  },
+    },
+
   {
     path: "/seller",
     children: [
@@ -78,6 +82,5 @@ export const routes = createBrowserRouter([
       }
     ]
   }
-    ]
-  }
+
 ])
