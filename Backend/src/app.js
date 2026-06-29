@@ -46,11 +46,11 @@ passport.use(new GoogleStrategy({
 }));
 
 
-app.get("/", (req, res) => {
+/*app.get("/", (req, res) => {
   res.status(200).json({
       message: "Server is running"
   })
-});
+});*/
 
 
 app.use("/api/auth", authRouter);
