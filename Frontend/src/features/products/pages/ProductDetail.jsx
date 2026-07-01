@@ -274,6 +274,7 @@ const ProductDetail = () => {
                                             variantId: activeVariant._id
                                         })
                                     }}
+                                    
                                 >
                                     Add to Cart
                                 </button>

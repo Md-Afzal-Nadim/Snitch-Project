@@ -11,8 +11,14 @@ import Cart from "../features/cart/pages/Cart.jsx"
 import AppLayout from "./AppLayout.jsx"
 import OrderSuccess from "../features/cart/pages/OrderSuccess.jsx"
 import Address from "../features/address/pages/Address.jsx"
+import LandingPage from "../features/auth/pages/LandingPage.jsx"
 
 export const routes = createBrowserRouter([
+
+  {
+    path: "/",
+    element: <LandingPage />
+  },
 
   {
     path: "/register",
@@ -26,7 +32,7 @@ export const routes = createBrowserRouter([
     element: <AppLayout />,
     children: [
   {
-    path: "/",
+    path: "/home",
     element: <Home />
   },
  

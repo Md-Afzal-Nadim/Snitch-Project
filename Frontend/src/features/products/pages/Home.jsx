@@ -3,13 +3,14 @@ import { useSelector } from 'react-redux';
 import { useProduct } from '../hooks/useProduct';
 import { useNavigate } from 'react-router';
 
+
+
 const Home = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const products = useSelector((state) => state.product.products || []);
   const loading = useSelector((state) => state.product.loading);
 
   const { handleGetAllProducts } = useProduct();
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,110 +19,132 @@ const Home = () => {
 
   const filteredProducts = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
-
     if (!term) return products;
-
     return products.filter((product) =>
       product.title?.toLowerCase().includes(term)
     );
   }, [products, searchTerm]);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
-      
+    <div className="min-h-screen bg-white text-slate-900">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
-        <section className="mb-8 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <p className="text-sm font-medium uppercase tracking-[0.25em] text-slate-500">
-              Discover the edit
-            </p>
-            <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
-              Modern essentials for your everyday style
-            </h1>
+       
+
+       
+        
+
+        
+
+        {/* All Collections */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-base lg:text-xl font-bold text-slate-900">All Collections</h2>
           </div>
-          <p className="max-w-xl text-sm text-slate-600 sm:text-base">
-            Curated pieces, sharp silhouettes, and everyday comfort built for the modern wardrobe.
-          </p>
-        </section>
 
-        {loading ? (
-          <div className="grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-3 xl:grid-cols-4">
-            {Array.from({ length: 8 }).map((_, index) => (
-              <div key={index} className="animate-pulse overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-                <div className="h-48 bg-slate-200" />
-                <div className="space-y-3 p-4">
-                  <div className="h-4 w-3/4 rounded bg-slate-200" />
-                  <div className="h-3 w-full rounded bg-slate-200" />
-                  <div className="h-3 w-2/3 rounded bg-slate-200" />
-                  <div className="h-9 rounded-full bg-slate-200" />
+          {loading ? (
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="animate-pulse rounded-xl overflow-hidden bg-slate-100">
+                  <div className="h-44 lg:h-56 bg-slate-200" />
+                  <div className="p-3 space-y-2">
+                    <div className="h-3 w-2/3 bg-slate-200 rounded" />
+                    <div className="h-3 w-1/2 bg-slate-200 rounded" />
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        ) : filteredProducts.length === 0 ? (
-          <div className="flex min-h-80 flex-col items-center justify-center rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center shadow-sm">
-            <h2 className="text-xl font-semibold text-slate-800">No products found</h2>
-            <p className="mt-2 max-w-md text-sm text-slate-600">
-              Try a different keyword or check back soon for fresh arrivals.
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-3 xl:grid-cols-4">
-            {filteredProducts.map((product) => {
-              const fallbackImage = 'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=900&q=80';
-              const firstImage = product.images?.[0];
-              const image =
-                (typeof firstImage === 'string' && firstImage) ||
-                firstImage?.url ||
-                firstImage?.secure_url ||
-                fallbackImage;
-              const price = product.price?.amount ?? 0;
-              const currency = product.price?.currency || 'INR';
+              ))}
+            </div>
+          ) : filteredProducts.length === 0 ? (
+            <div className="flex min-h-48 flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-12 text-center">
+              <h2 className="text-base font-semibold text-slate-800">No products found</h2>
+              <p className="mt-1 text-sm text-slate-500">Try a different keyword or check back soon.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+              {filteredProducts.map((product) => {
+                const fallbackImage = 'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=400&q=80';
+                const firstImage = product.images?.[0];
+                const image =
+                  (typeof firstImage === 'string' && firstImage) ||
+                  firstImage?.url ||
+                  firstImage?.secure_url ||
+                  fallbackImage;
+                const price = product.price?.amount ?? 0;
+                const currency = product.price?.currency || 'INR';
+                const symbol = currency === 'INR' ? '₹' : currency;
+                const mrp = product.price?.mrp ?? Math.round(price * 1.6);
+                const discount = mrp > price ? Math.round(((mrp - price) / mrp) * 100) : null;
+                const rating = product.rating ?? (4.2 + Math.random() * 0.6).toFixed(1);
+                const reviews = product.reviewCount ?? Math.floor(Math.random() * 4000 + 500);
 
-              return (
-                <article
-                  onClick={() => navigate(`/products/${product._id}`)}
-                  key={product._id}
-                  className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-lg"
-                >
-                  <div className="overflow-hidden">
-                    <img
-                      src={image}
-                      alt={product.title}
-                      onError={(event) => {
-                        event.currentTarget.src = fallbackImage;
-                      }}
-                      className="h-48 w-full object-cover transition duration-300 group-hover:scale-105"
-                    />
-                  </div>
-
-                  <div className="flex flex-col gap-3 p-4">
-                    <div>
-                      <h3 className="text-base font-semibold text-slate-900">{product.title}</h3>
-                      <p className="mt-1 line-clamp-2 text-sm text-slate-600">
-                        {product.description}
-                      </p>
+                return (
+                  <article
+                    key={product._id}
+                    onClick={() => navigate(`/products/${product._id}`)}
+                    className="overflow-hidden rounded-xl bg-white border border-slate-100 shadow-sm cursor-pointer hover:-translate-y-1 hover:shadow-md active:scale-95 transition-all duration-200"
+                  >
+                    <div className="relative overflow-hidden">
+                      <img
+                        src={image}
+                        alt={product.title}
+                        onError={(e) => { e.currentTarget.src = fallbackImage; }}
+                        className="h-44 lg:h-60 w-full object-cover"
+                      />
+                      {/* Rating badge */}
+                      <div className="absolute top-2 left-2 flex items-center gap-1 rounded bg-white/90 px-1.5 py-0.5 shadow-sm">
+                        <span className="text-[10px] font-bold text-slate-800">{rating} ★</span>
+                        <span className="text-[9px] text-slate-500">| {(reviews / 1000).toFixed(1)}k</span>
+                      </div>
+                      {/* Wishlist */}
+                      <button
+                        onClick={(e) => e.stopPropagation()}
+                        className="absolute bottom-2 right-2 h-7 w-7 lg:h-8 lg:w-8 rounded-full bg-white shadow flex items-center justify-center hover:text-rose-500 transition-colors"
+                      >
+                        <span className="text-sm text-slate-400">♡</span>
+                      </button>
                     </div>
 
-                    <div className="flex items-center justify-between">
-                      <p className="text-base font-semibold text-slate-900">
-                        {currency} {price.toLocaleString('en-IN')}
+                    <div className="p-2.5 lg:p-3">
+                      <p className="text-[10px] font-semibold uppercase text-slate-500 tracking-wide truncate">
+                        {product.brand || 'SNITCH'}
                       </p>
-                    </div>
+                      <h3 className="text-xs lg:text-sm font-semibold text-slate-900 leading-snug line-clamp-2 mt-0.5">
+                        {product.title}
+                      </h3>
 
-                    <button className="rounded-full border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-900 hover:bg-slate-900 hover:text-white">
-                      View Product
-                    </button>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-        )}
-      </main>
+                    {/* Description add kiya */}
+                    <p className="mt-1 line-clamp-2 text-xs text-slate-500 leading-relaxed">
+                     {product.description}
+                     </p>    
+
+
+
+                      <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
+                        <span className="text-sm lg:text-base font-bold text-slate-900">
+                          {symbol}{price.toLocaleString('en-IN')}
+                        </span>
+                        {mrp > price && (
+                          <>
+                            <span className="text-xs text-slate-400 line-through">
+                              {symbol}{mrp.toLocaleString('en-IN')}
+                            </span>
+                            <span className="text-[10px] font-bold text-green-600">({discount}% OFF)</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        
+      </div>
     </div>
   );
 };
+
 
 export default Home;
