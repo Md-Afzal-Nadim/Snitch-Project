@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useProduct } from '../hooks/useProduct';
 import { useNavigate } from 'react-router';
+import HomeSlidingPage from './HomeSlidingPage';
 
 
 
@@ -26,6 +27,8 @@ const Home = () => {
   }, [products, searchTerm]);
 
   return (
+    <>
+    <HomeSlidingPage />
     <div className="min-h-screen bg-white text-slate-900">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
@@ -143,8 +146,10 @@ const Home = () => {
         
       </div>
     </div>
+    </>
   );
 };
+
 
 
 export default Home;
