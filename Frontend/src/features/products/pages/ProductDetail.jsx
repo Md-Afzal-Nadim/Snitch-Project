@@ -120,7 +120,7 @@ const ProductDetail = () => {
             
             {/* ── BREADCRUMBS ── */}
             <nav className="text-xs text-gray-400 mb-6 flex items-center gap-2">
-                <Link to="/" className="hover:underline">Home</Link> &gt; 
+                <Link to="/home" className="hover:underline">Home</Link> &gt; 
                 <Link to="/shop" className="hover:underline">Shop</Link> &gt; 
                 <Link to="/shirts" className="hover:underline">Shirts</Link> &gt;
                 <span className="text-gray-600">{product.title || "Solid Black Shirt"}</span>

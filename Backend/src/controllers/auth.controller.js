@@ -116,7 +116,7 @@ export const register = async (req, res) => {
 
 
 
-    res.redirect("https://snitch-project-zuqv.onrender.com/");
+    res.redirect("https://snitch-project-zuqv.onrender.com/home");
 
   }
 

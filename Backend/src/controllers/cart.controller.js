@@ -29,6 +29,8 @@ export const addToCart = async (req, res) => {
     }
 
     const stock = await stockOfVariant(productId, variantId)
+    const selectedVariant = product.variants.find((variant) => variant._id.toString() === variantId)
+    const cartPrice = selectedVariant?.price || product.price
 
     const cart = (await cartModel.findOne({ user: req.user._id })) ||
         (await cartModel.create({ user: req.user._id }))
@@ -36,7 +38,8 @@ export const addToCart = async (req, res) => {
     const isProductAlreadyInCart = cart.items.some(item => item.product.toString() === productId && item.variant?.toString() === variantId)
 
     if (isProductAlreadyInCart) {
-        const quantityInCart = cart.items.find(item => item.product.toString() === productId && item.variant?.toString() === variantId).quantity
+        const existingItem = cart.items.find(item => item.product.toString() === productId && item.variant?.toString() === variantId)
+        const quantityInCart = existingItem.quantity
         if (quantityInCart + quantity > stock) {
             return res.status(400).json({
                 message: `Only ${stock} items left in stock. and you already have ${quantityInCart} items in your cart`,
@@ -46,7 +49,10 @@ export const addToCart = async (req, res) => {
 
         await cartModel.findOneAndUpdate(
             { user: req.user._id, "items.product": productId, "items.variant": variantId },
-            { $inc: { "items.$.quantity": quantity } },
+            {
+                $inc: { "items.$.quantity": quantity },
+                $set: { "items.$.price": cartPrice }
+            },
             { new: true }
         )
 
@@ -67,7 +73,7 @@ export const addToCart = async (req, res) => {
         product: productId,
         variant: variantId,
         quantity,
-        price: product.price
+        price: cartPrice
     })
 
     await cart.save()
@@ -129,9 +135,15 @@ export const incrementCartItemQuantity = async (req, res) => {
         })
     }
 
+    const selectedVariant = product.variants.find((variant) => variant._id.toString() === variantId)
+    const cartPrice = selectedVariant?.price || product.price
+
     await cartModel.findOneAndUpdate(
         { user: req.user._id, "items.product": productId, "items.variant": variantId },
-        { $inc: { "items.$.quantity": 1 } },
+        {
+            $inc: { "items.$.quantity": 1 },
+            $set: { "items.$.price": cartPrice }
+        },
         { new: true }
     )
 
@@ -207,15 +219,15 @@ export const decrementCartItemQuantity = async (req, res) => {
     });
 };
 
-    
 
 
-export const createOrderController = async (req, res) => {
+
+/*export const createOrderController = async (req, res) => {
 
 
     const cart = await getCartDetails(req.user._id)
 
-    
+
 
     if (!cart) {
         return res.status(400).json({
@@ -235,18 +247,22 @@ export const createOrderController = async (req, res) => {
             amount: cart.totalPrice,
             currency: cart.currency
         },
-        orderItems: cart.items.map(item => ({
-            title: item.product.title,
-            productId: item.product._id,
-            variantId: item.variant,
-            quantity: item.quantity,
-            images: item.product.variants.images || item.product.images,
-            description: item.product.description,
-            price: {
-                amount: item.product.variants.price.amount || item.product.price.amount,
-                currency: item.product.variants.price.currency || item.product.price.currency
-            }
-        }))
+        orderItems: cart.items.map(item => {
+            const selectedVariant = item.product.variants?.find((variant) => variant._id?.toString() === item.variant?.toString());
+
+            return {
+                title: item.product.title,
+                productId: item.product._id,
+                variantId: item.variant,
+                quantity: item.quantity,
+                images: selectedVariant?.images || item.product.images,
+                description: item.product.description,
+                price: {
+                    amount: selectedVariant?.price?.amount ?? item.price?.amount ?? item.product.price?.amount,
+                    currency: selectedVariant?.price?.currency ?? item.price?.currency ?? item.product.price?.currency
+                }
+            };
+        })
     })
 
     return res.status(200).json({
@@ -254,7 +270,7 @@ export const createOrderController = async (req, res) => {
         success: true,
         order
     })
-}
+}*/
 
 export const verifyOrderController = async (req, res) => {
     const {
@@ -302,3 +318,115 @@ export const verifyOrderController = async (req, res) => {
         success: true
     })
 }
+
+export const getUserOrdersController = async (req, res) => {
+    try {
+        const payments = await paymentModel
+            .find({ user: req.user._id })
+            .sort({ createdAt: -1 })
+            .lean();
+
+        return res.status(200).json({
+            message: "Orders fetched successfully",
+            success: true,
+            orders: payments,
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Failed to fetch orders", success: false });
+    }
+};
+
+
+
+
+
+
+
+
+
+// ─── Update createOrderController — accept addressId from the frontend ───
+export const createOrderController = async (req, res) => {
+
+    const { addressId } = req.body; // <-- NEW: frontend sends the selected address's _id
+
+    if (!addressId) {
+        return res.status(400).json({
+            message: "Address is required to place an order",
+            success: false
+        });
+    }
+
+    const cart = await getCartDetails(req.user._id)
+
+    if (!cart) {
+        return res.status(400).json({
+            message: "Cart is empty",
+            success: false
+        })
+    }
+
+    const order = await createOrder({ amount: cart.totalPrice, currency: cart.currency })
+
+    const payment = await paymentModel.create({
+        user: req.user._id,
+        addressId, // <-- NEW: save it right at creation time
+        razorpay: {
+            orderId: order.id,
+        },
+        price: {
+            amount: cart.totalPrice,
+            currency: cart.currency
+        },
+        orderItems: cart.items.map(item => {
+            const selectedVariant = item.product.variants?.find((variant) => variant._id?.toString() === item.variant?.toString());
+
+            return {
+                title: item.product.title,
+                productId: item.product._id,
+                variantId: item.variant,
+                quantity: item.quantity,
+                images: selectedVariant?.images || item.product.images,
+                description: item.product.description,
+                price: {
+                    amount: selectedVariant?.price?.amount ?? item.price?.amount ?? item.product.price?.amount,
+                    currency: selectedVariant?.price?.currency ?? item.price?.currency ?? item.product.price?.currency
+                }
+            };
+        })
+    })
+
+    return res.status(200).json({
+        message: "Order created successfully",
+        success: true,
+        order
+    })
+}
+
+// ─── NEW: fetch a single order by its razorpay order_id ───
+// This is what OrderSuccess.jsx calls on page reload, since Redux memory
+// is gone by then but this hits MongoDB directly.
+export const getOrderByIdController = async (req, res) => {
+    const { razorpayOrderId } = req.params;
+
+    const payment = await paymentModel
+        .findOne({
+            "razorpay.orderId": razorpayOrderId,
+            user: req.user._id, // ensures users can only fetch their own orders
+        })
+        .populate("addressId")
+        .lean();
+
+    if (!payment) {
+        return res.status(404).json({
+            message: "Order not found",
+            success: false
+        });
+    }
+
+    return res.status(200).json({
+        message: "Order fetched successfully",
+        success: true,
+        order: payment
+    });
+};

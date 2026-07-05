@@ -10,8 +10,10 @@ import SellerProductDetails from "../features/products/pages/SellerProductDetail
 import Cart from "../features/cart/pages/Cart.jsx"
 import AppLayout from "./AppLayout.jsx"
 import OrderSuccess from "../features/cart/pages/OrderSuccess.jsx"
+import Orders from "../features/cart/pages/Orders.jsx"
 import Address from "../features/address/pages/Address.jsx"
 import LandingPage from "../features/auth/pages/LandingPage.jsx"
+import Payment from "../features/address/pages/Payment.jsx"
 
 export const routes = createBrowserRouter([
 
@@ -24,37 +26,49 @@ export const routes = createBrowserRouter([
     path: "/register",
     element: <Register />
   },
-   {
+  {
     path: "/login",
     element: <Login />
   },
   {
     element: <AppLayout />,
     children: [
-  {
-    path: "/home",
-    element: <Home />
-  },
- 
-  {
-    path: "/products/:productId",
-    element: <ProductDetail />
-  },
-  {
-    path: "/cart",
-    element: <Protected>
-      <Cart />
-    </Protected>
-  }, 
-  {
-    path: "/order-success",
-    element: <Protected>
-      <OrderSuccess />
-    </Protected>
+      {
+        path: "/home",
+        element: <Home />
+      },
 
-  },
+      {
+        path: "/products/:productId",
+        element: <ProductDetail />
+      },
+      {
+        path: "/cart",
+        element: <Protected>
+          <Cart />
+        </Protected>
+      },
+      {
+        path: "/orders",
+        element: <Protected>
+          <Orders />
+        </Protected>
+      },
+      {
+        path: "/payment",
+        element: <Protected>
+          <Payment />
+        </Protected>
+      },
+      {
+        path: "/order-success",
+        element: <Protected>
+          <OrderSuccess />
+        </Protected>
 
-]
+      },
+
+    ]
   },
   {
     path: "/address",
@@ -62,7 +76,7 @@ export const routes = createBrowserRouter([
       <Address />
     </Protected>
 
-    },
+  },
 
   {
     path: "/seller",
@@ -71,20 +85,20 @@ export const routes = createBrowserRouter([
         path: "/seller/create-product",
 
         element: <Protected role="seller">
-            <CreateProduct />
-          </Protected>
+          <CreateProduct />
+        </Protected>
       },
       {
         path: "/seller/dashboard",
-        element: <Protected role="seller"> 
-               <Dashboard />
-          </Protected>
+        element: <Protected role="seller">
+          <Dashboard />
+        </Protected>
       },
       {
         path: "/seller/products/:productId",
         element: <Protected role="seller">
-             <SellerProductDetails />
-          </Protected>
+          <SellerProductDetails />
+        </Protected>
       }
     ]
   }

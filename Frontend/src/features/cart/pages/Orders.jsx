@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { useSelector } from "react-redux";
-import { useCart } from "../hooks/useCart"; // adjust path to your actual hooks folder
+import { useCart } from "../hooks/useCart";
 import {
   Check,
   ClipboardList,
@@ -62,25 +62,10 @@ const getItemImage = (item, variantDetail) => {
   return null;
 };
 
-/* Resolves the selected variant object for a cart/order item. */
-const getVariantDetails = (item) => {
-  if (!item) return null;
-
-  if (item.variantDetails) return item.variantDetails;
-
-  const variantId = item.variant;
-  const product = item.product;
-
-  if (!variantId || !product) return null;
-  if (Array.isArray(product.variants)) {
-    return product.variants.find((variant) => variant?._id?.toString() === variantId?.toString()) || null;
-  }
-
-  if (product.variants && product.variants._id?.toString() === variantId?.toString()) {
-    return product.variants;
-  }
-
-  return null;
+/* Resolves the variant object for a cart/order item, same pattern as Cart & Address pages */
+const getVariantDetails = (product, variantId) => {
+  if (!product?.variants || !variantId) return null;
+  return product.variants;
 };
 
 /* Handles whichever field/format the order date comes in. Falls back to
@@ -104,7 +89,7 @@ const getOrderDate = (order) => {
   });
 };
 
-const OrderSuccess = () => {
+const Orders = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const reduxOrder = useSelector(selectOrder);
@@ -243,8 +228,9 @@ const OrderSuccess = () => {
                   <React.Fragment key={step.id}>
                     <div className="flex flex-col items-center text-center flex-shrink-0 w-20 sm:w-24">
                       <div
-                        className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center mb-2 ${isActive ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-400"
-                          }`}
+                        className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center mb-2 ${
+                          isActive ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-400"
+                        }`}
                       >
                         <Icon size={20} />
                       </div>
@@ -311,7 +297,8 @@ const OrderSuccess = () => {
               <div className="flex flex-col gap-4 mb-5">
                 {items.map((item) => {
                   const product = item.product ?? item;
-                  const variantDetail = getVariantDetails(item);
+                  const variantId = item.variant;
+                  const variantDetail = getVariantDetails(product, variantId);
                   const attributes = variantDetail?.attributes ?? {};
                   const imgSrc = getItemImage(item, variantDetail);
                   const displayPrice = item.price ?? variantDetail?.price ?? product?.price;
@@ -344,11 +331,11 @@ const OrderSuccess = () => {
                           <p className="text-xs text-gray-500">
                             {Object.keys(attributes).length > 0
                               ? Object.entries(attributes)
-                                .map(([key, val]) => `${key[0].toUpperCase()}${key.slice(1)}: ${val}`)
-                                .join("  |  ")
+                                  .map(([key, val]) => `${key[0].toUpperCase()}${key.slice(1)}: ${val}`)
+                                  .join("  |  ")
                               : [size && `Size: ${size}`, color && `Color: ${color}`]
-                                .filter(Boolean)
-                                .join("  |  ")}
+                                  .filter(Boolean)
+                                  .join("  |  ")}
                           </p>
                         )}
                         <p className="text-xs text-gray-400">Qty: {qty}</p>
@@ -479,7 +466,13 @@ const OrderSuccess = () => {
   );
 };
 
-export default OrderSuccess;
+export default Orders;
+
+
+
+
+
+
 
 
 

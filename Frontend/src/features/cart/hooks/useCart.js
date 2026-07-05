@@ -1,6 +1,6 @@
-import { addItem, getCart, incrementCartItemApi, decrementCartItemApi, createCartOrder, verifyCartOrder } from '../service/cart.api';
+import { addItem, getCart, incrementCartItemApi, decrementCartItemApi, createCartOrder, verifyCartOrder, fetchOrderById } from '../service/cart.api';
 import { useDispatch } from 'react-redux';
-import { setCart,  incrementCartItem, decrementCartItem } from '../state/cart.slice';
+import { setCart, incrementCartItem, decrementCartItem } from '../state/cart.slice';
 
 
 
@@ -9,7 +9,6 @@ export const useCart = () => {
   const dispatch = useDispatch();
   async function handleAddItem({ productId, variantId }) {
     const data = await addItem({ productId, variantId })
-    // अगर प्रोडक्ट सफलतापूर्वक ऐड हो गया है, तो कार्ट को फिर से लोड करें
     if (data.success) {
       await handleGetCart();
     }
@@ -31,8 +30,9 @@ export const useCart = () => {
     dispatch(decrementCartItem({ productId, variantId }));
   }
 
-     async function handleCreateCartOrder() {
-    const data = await createCartOrder();
+  // UPDATED — now accepts addressId and passes it through to the API call
+  async function handleCreateCartOrder(addressId) {
+    const data = await createCartOrder(addressId);
     return data.order;
   }
 
@@ -41,5 +41,40 @@ export const useCart = () => {
     return data.success;
   }
 
-  return { handleAddItem, handleGetCart, handleIncrementCartItem , handleDecrementCartItem  , handleCreateCartOrder, handleVerifyCartOrder };
+  // NEW — used by OrderSuccess.jsx to reload-proof fetch a single order
+  async function handleGetOrderById(razorpayOrderId) {
+    const data = await fetchOrderById(razorpayOrderId);
+    return data.order;
+  }
+
+  return {
+    handleAddItem,
+    handleGetCart,
+    handleIncrementCartItem,
+    handleDecrementCartItem,
+    handleCreateCartOrder,
+    handleVerifyCartOrder,
+    handleGetOrderById,
+  };
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

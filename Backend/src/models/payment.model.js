@@ -40,6 +40,9 @@ const paymentSchema = new mongoose.Schema({
     }
   ]
 
+} , {
+   timestamps: true 
+
 });
 
 const PaymentModel = mongoose.model("Payment", paymentSchema);
