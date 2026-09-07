@@ -12,7 +12,7 @@ A full-stack **E-Commerce Marketplace** built with the **MERN Stack**, featuring
 
 ### 👤 Buyer Demo
 
-▶️ [Watch Buyer Demo] (https://github.com/user-attachments/assets/a65f57c8-3102-423d-a6fe-1c7430323569)
+https://github.com/user-attachments/assets/a65f57c8-3102-423d-a6fe-1c7430323569
 
 The Buyer side demonstrates:
 
@@ -28,7 +28,7 @@ The Buyer side demonstrates:
 
 ### 🏪 Seller Demo
 
-▶️ [Watch Seller Demo](https://github.com/user-attachments/assets/a81f3807-d769-41a6-92cf-e938cf94b6d5)
+https://github.com/user-attachments/assets/a81f3807-d769-41a6-92cf-e938cf94b6d5
 
 The Seller side demonstrates:
 
