@@ -125,7 +125,7 @@ The Seller side demonstrates:
        │             │             │             │
        └──────┬──────┘             └──────┬──────┘
               │                           │
-          Address                     Orders
+          Address                     
               │
            Checkout
               │
